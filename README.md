@@ -45,10 +45,18 @@ Heath check.
 - `GET`, `HEAD`, ...: returns a response with the status code defined by the `POST`
 - `POST`: changes the status code of the `GET` (`HEAD`, ...) response.
 
+#### `/save?data=String`
+
+Save the first 20 characters of the query parameter `data` in memory.
+
+#### `/get`
+
+Returns the saved data.
+
 ### Flags
 
 | Flag      | Env var              | Description                             |
-|-----------|----------------------|-----------------------------------------|
+| --------- | -------------------- | --------------------------------------- |
 | `cert`    |                      | Give me a certificate.                  |
 | `key`     |                      | Give me a key.                          |
 | `cacert`  |                      | Give me a CA chain, enforces mutual TLS |
@@ -89,7 +97,7 @@ $ curl -v http://localhost:80/health
 > Host: localhost:80
 > User-Agent: curl/7.65.3
 > Accept: */*
-> 
+>
 * Mark bundle as not supporting multiuse
 < HTTP/1.1 500 Internal Server Error
 < Date: Mon, 16 Sep 2019 22:52:40 GMT
@@ -101,13 +109,13 @@ docker run -d -P -v ./certs:/certs --name iamfoo traefik/whoami --cert /certs/ex
 ```
 
 ```yml
-version: '3.9'
+version: "3.9"
 
 services:
   whoami:
     image: traefik/whoami
     command:
-       # It tells whoami to start listening on 2001 instead of 80
-       - --port=2001
-       - --name=iamfoo
+      # It tells whoami to start listening on 2001 instead of 80
+      - --port=2001
+      - --name=iamfoo
 ```
