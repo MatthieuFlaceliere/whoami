@@ -19,6 +19,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var (
+	// List of data save from save query
+	dataSave []string
+)
+
 // Units.
 const (
 	_        = iota
@@ -76,6 +81,8 @@ func main() {
 	mux.Handle("/bench", handle(benchHandler, verbose))
 	mux.Handle("/api", handle(apiHandler, verbose))
 	mux.Handle("/health", handle(healthHandler, verbose))
+	mux.Handle("/save", handle(saveHandler, verbose))
+	mux.Handle("/get", handle(getHandler, verbose))
 	mux.Handle("/", handle(whoamiHandler, verbose))
 
 	if cert == "" || key == "" {
@@ -204,6 +211,30 @@ func dataHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err := io.Copy(w, content); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+}
+
+func saveHandler(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+
+	data := queryParams.Get("data")
+	if data != "" {
+		// Remove all new lines
+		data = strings.Replace(data, "\n", "", -1)
+		// Max 20 caracter
+		if len(data) > 20 {
+			data = data[:20]
+		}
+
+		dataSave = append(dataSave, data)
+
+		_, _ = fmt.Fprintln(w, "Data saved")
+	}
+}
+
+func getHandler(w http.ResponseWriter, r *http.Request) {
+	for _, data := range dataSave {
+		_, _ = fmt.Fprintln(w, data)
 	}
 }
 
